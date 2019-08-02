@@ -9,46 +9,30 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class MyGdxGame extends ApplicationAdapter {
 	private SpriteBatch batch;
 	//Texture img;
-	private Hero hero;
-	private Monster monster;
+	private GameScreen gameScreen;
+
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		//img = new Texture("hero.png");
-		hero = new Hero();
-		monster = new Monster(this);
+		gameScreen = new GameScreen(batch);
+		gameScreen.create();
+
 	}
 
 	@Override
 	public void render () {
 		float dt = Gdx.graphics.getDeltaTime();
 		update(dt);
-	    Gdx.gl.glClearColor(0.6f, 0.85f, 0.92f, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		//batch.draw(img, 0, 0);
-		hero.render(batch);
-		monster.render(batch);
-		batch.end();
+		gameScreen.render();
 	}
 
 	private void update(float dt){
-		hero.update(dt);
-		monster.update(dt);
-		float dst = (float) Math.sqrt((hero.getX() - monster.getX()) * (hero.getX() - monster.getX()) + (hero.getY() - monster.getY()) * (hero.getY() - monster.getY()));
-		if (dst < 40) {
-			hero.takeDamage(dt * 10.0f);
-		}
+		gameScreen.update(dt);
     }
 
-	public Hero getHero() {
-		return hero;
-	}
 
-	public Monster getMonster() {
-		return monster;
-	}
 	
 	@Override
 	public void dispose () {
