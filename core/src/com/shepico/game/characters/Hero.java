@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.shepico.game.GameScreen;
@@ -18,30 +19,37 @@ public class Hero extends GameCharacter {
     private int exp;
     private int[] expTo = {0, 0, 100, 300, 600};
 
+
     public Hero(GameScreen gameScreen){
         this.gameScreen = gameScreen;
         this.level = 1;
-        this.texture = new Texture("hero.png");
+        this.texture = new Texture("hero_anim.png");
+        this.regions = new TextureRegion(texture).split(80,80)[0];
         this.textureHp = new Texture("bar.png");
         this.position = new Vector2(MathUtils.random(0, 1280), MathUtils.random(0, 720));
         while(!gameScreen.getMap().isCellPassable(position)){
             this.position = new Vector2(MathUtils.random(0, 1280), MathUtils.random(0, 720));
         }
         direction = new Vector2(0, 0);
-        temp = new Vector2(0, 0 );
         this.speed = 200;
         this.hpMax = 100.0f ;
         this.hp = hpMax;
         this.weapon = new Weapon("Sword", 50, 0.5f, 5);
+        this.secondsPerFrame = 0.2f;
     }
 
     public void renderHUD(SpriteBatch batch, BitmapFont font24){
-        font24.draw(batch, "Knight: Pavel\nExp: " + exp + "/ " + expTo[level+1] +"\nScore: 200000\nCoins: " + coins + "\nLevel: " + level, 20, 700);
+        stringHelper.setLength(0);
+        stringHelper.append("Knight: Pavel").append("\n")
+                .append("Exp: ").append(exp).append("/ ").append(expTo[level+1]).append("\n");
+
+        font24.draw(batch, stringHelper, 20, 700);
     }
 
     @Override
     public void update(float dt){
         damageEffectTimer -=dt;
+        animationTimer += dt;
         if (damageEffectTimer <0) {
             damageEffectTimer = 0;
         }
@@ -95,6 +103,9 @@ public class Hero extends GameCharacter {
         switch (it.getType()){
             case COINS:
                 coins +=1;
+                stringHelper.setLength(0);
+                stringHelper.append("+1");
+                gameScreen.getTextEmiter().setup(it.getPosition().x, it.getPosition().y, stringHelper);
                 break;
         }
         it.deactivate();

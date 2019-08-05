@@ -1,6 +1,7 @@
 package com.shepico.game.characters;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.shepico.game.GameScreen;
@@ -14,6 +15,7 @@ public class Monster extends GameCharacter{
 
     public Monster(GameScreen gameScreen){
         this.texture = new Texture("zomby.png");
+        this.regions = new TextureRegion(texture).split(80,80)[0];
         this.textureHp = new Texture("bar.png");
         this.position = new Vector2(MathUtils.random(0, 1280), MathUtils.random(0, 720));
         while(!gameScreen.getMap().isCellPassable(position)){
@@ -21,7 +23,6 @@ public class Monster extends GameCharacter{
         }
 
         direction = new Vector2(0, 0);
-        temp = new Vector2(0, 0 );
         this.speed = 30;
         //this.game = game;
         this.activityRadius = 200f;
@@ -33,6 +34,7 @@ public class Monster extends GameCharacter{
 
     @Override
     public void update(float dt){
+        animationTimer += dt;
         float dst = gameScreen.getHero().getPosition().dst(this.position);
         if(dst < activityRadius){
             direction.set(gameScreen.getHero().getPosition());
@@ -53,13 +55,14 @@ public class Monster extends GameCharacter{
             this.position.set(temp);
         }
 
-            if (dst < weapon.getAttackRadius()) {
-                attackTimer += dt;
-                if (attackTimer >= weapon.getAttackPeriod()) {
-                    attackTimer = 0;
-                    gameScreen.getHero().takeDamage(weapon.getDamage());
-                }
+        if (dst < weapon.getAttackRadius()) {
+            attackTimer += dt;
+            if (attackTimer >= weapon.getAttackPeriod()) {
+                attackTimer = 0;
+                gameScreen.getHero().takeDamage(weapon.getDamage());
             }
+        }
+
         damageEffectTimer -=dt;
         if (damageEffectTimer <0) {
             damageEffectTimer = 0;

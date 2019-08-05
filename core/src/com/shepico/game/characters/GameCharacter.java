@@ -3,6 +3,7 @@ package com.shepico.game.characters;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.shepico.game.GameScreen;
 import com.shepico.game.Weapon;
@@ -12,13 +13,25 @@ public abstract class GameCharacter {
     Texture textureHp;
     Vector2 position;
     Vector2 direction;
-    Vector2 temp;
+
     float speed;
     float hp, hpMax;
     GameScreen gameScreen;
     float damageEffectTimer;
     float attackTimer;
     Weapon weapon;
+
+    TextureRegion[] regions;
+    float animationTimer;
+    float secondsPerFrame;
+
+    Vector2 temp;
+    StringBuilder stringHelper;
+
+    public GameCharacter() {
+        temp = new Vector2 (0, 0);
+        stringHelper = new StringBuilder();
+    }
 
     public Vector2 getPosition() {
         return position;
@@ -34,15 +47,17 @@ public abstract class GameCharacter {
         if (damageEffectTimer > 0) {
             batch.setColor(1, 1 - damageEffectTimer ,1 - damageEffectTimer ,1);
         }
-
-        batch.draw(texture, position.x-40, position.y-40);
+        int frameIndex = (int) (animationTimer / secondsPerFrame) % regions.length;
+        batch.draw(regions[frameIndex], position.x-40, position.y-40);
         batch.setColor(1, 1 ,1 ,1);
         batch.setColor(0, 0 ,0 ,1);
         batch.draw(textureHp, position.x-42, position.y + 80 - 42, 84, 15);
         batch.setColor(1, 0 ,0 ,1);
         batch.draw(textureHp, position.x-40, position.y + 80 - 40, 0, 0, hp/hpMax * 80, 11, 1, 1, 0, 0, 0, 80, 11, false, false);
         batch.setColor(1, 1 ,1 ,1);
-        font24.draw(batch, String.valueOf((int) hp), position.x - 40, position.y +80 - 22, 80, 1, false);
+        stringHelper.setLength(0);
+        stringHelper.append((int) hp);
+        font24.draw(batch, stringHelper, position.x - 40, position.y +80 - 22, 80, 1, false);
     }
 
 
