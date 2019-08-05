@@ -1,4 +1,4 @@
-package com.shepico.game.characters;
+package com.shepico.game;
 
 public class Weapon {
 
